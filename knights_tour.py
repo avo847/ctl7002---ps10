@@ -28,7 +28,13 @@ class Board:
       
   def is_free(self, point):
     """ Check whether a particular point is not already in movelist"""
-    return (not point in self.spaces_used)
+    return (not self.point_in_list(point))
+    
+  def point_in_list(self, point):
+    for i in np.arange(0,self.spaces_used.shape[0],1):
+      if np.all(point == self.spaces_used[i,:]):
+        return True
+    return False
     
     
   def use_space(self, point):
@@ -52,31 +58,39 @@ class Knight:
     self.moves = coll.OrderedDict()
     self.board = board
     self.board_size = board.size
-    self.spaces_used = board.spaces_used
+    self.spaces_used = 0 #board.spaces_used
     self.current = start_pos
     self.add_move(self.current)
 
     
   def get_moves(self, point):
+    """determine available moves from given space """
     poss_moves = []
-    y_cur = point[0]
-    x_cur = point[1]
+    #y_cur = point[0]
+    #x_cur = point[1]
     for x in [-1, 1]:
       for y in [-2, 2]:
-        a = self.current + np.array([x,y])
-        if self.board.is_valid(a): # add space to move list
+        a = point + np.array([x,y])
+        if self.board.is_valid(a) and self.board.is_free(a): # add space to move list
           poss_moves.append(a)
+
     for x in [-2,2]:
       for y in [-1,1]: 
-        a = self.current + np.array([x,y])
-        if self.board.is_valid(a): # add space to move list
+        a = point + np.array([x,y])
+        if self.board.is_valid(a) and self.board.is_free(a): # add space to move list
           poss_moves.append(a)
     
     return poss_moves
     
-
+ 
+  
   def add_move(self, point):
+    """Manually add a move
+    Takes a point in the form of a numpy array"""
     self.moves[point.tostring()] = self.get_moves(point)
+    self.board.use_space(point)
+    self.spaces_used = self.spaces_used+1
+    
 
     
   def print_move_list(self):
@@ -85,4 +99,42 @@ class Knight:
       for q in self.moves[p]:
         print "  ", q
         
+  def hash(self, point):
+    return point.tostring()
+    
+  def next_move(self):
+    """Use first move available on list at current location;
+    if move list is empty, backtrack"""
+    if len(self.moves[self.current.tostring()]) == 0:
+      print "empty move list!"
+    
+    target = self.moves[self.current.tostring()][0]
+    self.current = target # updated position
+    self.board.use_space(self.current)
+    self.spaces_used = self.spaces_used + 1
+    self.moves[self.current.tostring()] = self.get_moves(self.current)
+    
+    
+  def backtrack(self):
+    """use only when there are no available moves.
+    move to previous location and delete top move in move list. Also
+    delete last element in self.moves, a point with empty move list
+    """
+    self.moves.popitem()[0]
+    self.current = self.moves[ self.moves.keys()[len(self.moves.keys())-1] ]    
+    self.moves[self.current.tostring()] = self.moves[self.current.tostring()] [1:]
+    self.spaces_used = self.spaces_used - 1
+
+    
+class Knights_tour:
+  def __init__(self, start_pos, max):
+    self.board = Board()
+    self.knight = Knight(self.board, start_pos)
+    self.max_moves = max
+    
+  def run(self):
+    i = 1 # first move is placing knight on the board
+    while i <= self.max_moves:
+      self.knight.next_move()
+      i = i + 1
       

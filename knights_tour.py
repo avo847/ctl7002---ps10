@@ -40,8 +40,12 @@ class Board:
   def use_space(self, point):
     if self.is_free(point):
       self.spaces_used = np.append(self.spaces_used, [point], axis=0)
-    else:
-      print point,  " alread in use!"
+    #else:
+      #print point,  " alread in use!"
+      
+  def free_space(self,point):
+    if not self.is_free(point):
+      self.spaces_used = np.delete(self.spaces_used, point, 0)
     
     
     
@@ -108,8 +112,8 @@ class Knight:
     if move list is empty, backtrack"""
     
     while len(self.moves[self.current.tostring()]) == 0:
-      print "empty move list at position ", self.current
-      print "backtracking..."
+      #print "empty move list at position ", self.current
+      #print "backtracking..."
       self.backtrack()
     
     target = self.moves[self.current.tostring()][0]
@@ -123,11 +127,12 @@ class Knight:
     """use only when there are no available moves.
     move to previous location and delete top move in move list. Also
     delete last element in self.moves, a point with empty move list
+    
+    Need to delete used space from board too!
     """
-    self.moves.popitem()# pop last item in list, i.e., location where there are no moves
+    point = np.fromstring(self.moves.popitem()[0], dtype=int)# pop last item in list, i.e., location where there are no moves
     self.current = np.fromstring(self.moves.keys()[len(self.moves.keys())-1], dtype=int)    # set current to last item
-    print self.current
-    print type(self.current)
+    self.board.free_space(point)
     key = self.current.tostring()
     self.moves[key] = self.moves[key] [1:] #remove first move, already tried
     self.spaces_used = self.spaces_used - 1

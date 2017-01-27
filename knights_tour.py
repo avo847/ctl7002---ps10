@@ -98,6 +98,7 @@ class Knight:
       print "At ", np.fromstring(p, dtype=int), " possible moves are :"
       for q in self.moves[p]:
         print "  ", q
+    print "total spaces used: ", self.spaces_used
         
   def hash(self, point):
     return point.tostring()
@@ -105,8 +106,11 @@ class Knight:
   def next_move(self):
     """Use first move available on list at current location;
     if move list is empty, backtrack"""
-    if len(self.moves[self.current.tostring()]) == 0:
-      print "empty move list!"
+    
+    while len(self.moves[self.current.tostring()]) == 0:
+      print "empty move list at position ", self.current
+      print "backtracking..."
+      self.backtrack()
     
     target = self.moves[self.current.tostring()][0]
     self.current = target # updated position
@@ -120,10 +124,14 @@ class Knight:
     move to previous location and delete top move in move list. Also
     delete last element in self.moves, a point with empty move list
     """
-    self.moves.popitem()[0]
-    self.current = self.moves[ self.moves.keys()[len(self.moves.keys())-1] ]    
-    self.moves[self.current.tostring()] = self.moves[self.current.tostring()] [1:]
+    self.moves.popitem()# pop last item in list, i.e., location where there are no moves
+    self.current = np.fromstring(self.moves.keys()[len(self.moves.keys())-1], dtype=int)    # set current to last item
+    print self.current
+    print type(self.current)
+    key = self.current.tostring()
+    self.moves[key] = self.moves[key] [1:] #remove first move, already tried
     self.spaces_used = self.spaces_used - 1
+    
 
     
 class Knights_tour:
@@ -134,7 +142,12 @@ class Knights_tour:
     
   def run(self):
     i = 1 # first move is placing knight on the board
-    while i <= self.max_moves:
+    while i < self.max_moves:
+      if self.knight.spaces_used == 64:
+        print "Completed tour!"
+        break;
+        
       self.knight.next_move()
       i = i + 1
-      
+    print "used ", i, " moves."
+    print "knight covered ", self.knight.spaces_used, " spaces at end."

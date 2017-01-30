@@ -3,7 +3,7 @@ import numpy as np
 
 
 #game.knight.print_move_list()
-
+"""
 def run():
   for i in np.arange(0,8,1):
     for j in np.arange(0,8,1):
@@ -14,8 +14,24 @@ def run():
         game.run()
         if game.knight.spaces_used == 64:
           print "Solution found when starting at ", p
-        return
+          print "spaces used: ", game.board.spaces_used
+          #game.knight.print_move_list()
+          #print "board says: ", np.shape(game.board.spaces_used), " spaces are used"
+          #print game.board.spaces_used
+          
+          return
       except IndexError:
-        print "no solution found when starting at ", p
+        print "==== No solution found when starting at ", p, " ===="
 
 run()
+"""
+
+
+p = np.array([0,0])
+game=kt.Knights_tour(p,50000)
+print "starting tour at ", p
+game.run()
+if game.knight.spaces_used == 64:
+  print "Solution found when starting at ", p
+  print "spaces used: ", game.board.spaces_used
+          

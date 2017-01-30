@@ -1,7 +1,6 @@
 import collections as coll
 import numpy as np
-
-
+import pdb
     
 class Board:
   """ Class to store data for a square chessboard of specified size (default 8x8)
@@ -45,7 +44,9 @@ class Board:
       
   def free_space(self,point):
     if not self.is_free(point):
-      self.spaces_used = np.delete(self.spaces_used, point, 0)
+      #self.spaces_used = np.delete(self.spaces_used, point, 0) # here lies the problem
+      self.spaces_used = self.spaces_used[:len(self.spaces_used)-1] #remove last element
+      
     
     
     
@@ -98,10 +99,12 @@ class Knight:
 
     
   def print_move_list(self):
+    n = 1
     for p in self.moves.keys():
-      print "At ", np.fromstring(p, dtype=int), " possible moves are :"
+      print n, " : at ", np.fromstring(p, dtype=int), " possible moves are :"
       for q in self.moves[p]:
         print "  ", q
+      n = n+1
     print "total spaces used: ", self.spaces_used
         
   def hash(self, point):
@@ -115,13 +118,15 @@ class Knight:
       #print "empty move list at position ", self.current
       #print "backtracking..."
       self.backtrack()
+      #print "...moved to ", self.current
     
-    target = self.moves[self.current.tostring()][0]
+    target = self.moves[self.current.tostring()][0] # a numpy array
+    self.board.use_space(target) # use space in board - ?can we be sure this is complete before function returns?
     self.current = target # updated position
-    self.board.use_space(self.current)
     self.spaces_used = self.spaces_used + 1
-    self.moves[self.current.tostring()] = self.get_moves(self.current)
-    
+    move_list = self.get_moves(self.current)
+    #print "At ", self.current, "possible moves are", move_list
+    self.moves[self.current.tostring()] = move_list #what if current space was encountered earlier?
     
   def backtrack(self):
     """use only when there are no available moves.
@@ -130,11 +135,17 @@ class Knight:
     
     Need to delete used space from board too!
     """
+    #pdb.set_trace()
+  
+    
     point = np.fromstring(self.moves.popitem()[0], dtype=int)# pop last item in list, i.e., location where there are no moves
+    #print "...backtracking from ", point
     self.current = np.fromstring(self.moves.keys()[len(self.moves.keys())-1], dtype=int)    # set current to last item
+    #print "... to ", self.current
     self.board.free_space(point)
     key = self.current.tostring()
     self.moves[key] = self.moves[key] [1:] #remove first move, already tried
+    #print " at ", self.current, ", moves are ", self.moves[key]
     self.spaces_used = self.spaces_used - 1
     
 

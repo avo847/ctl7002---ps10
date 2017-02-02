@@ -1,5 +1,6 @@
 import knights_tour as kt
 import numpy as np
+import pdb
 
 
 #game.knight.print_move_list()
@@ -28,9 +29,10 @@ run()
 
 
 p = np.array([0,0])
-game=kt.Knights_tour(p,50000)
+game=kt.Knights_tour(p,50000000)
 print "starting tour at ", p
 game.run()
+pdb.set_trace()
 if game.knight.spaces_used == 64:
   print "Solution found when starting at ", p
   print "spaces used: ", game.board.spaces_used

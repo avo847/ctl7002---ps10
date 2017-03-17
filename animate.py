@@ -4,12 +4,20 @@ from matplotlib import animation
 import collections as coll
 import numpy as np
 import pdb
+import matplotlib
+#matplotlib.use("Agg")
+
+# Set up formatting for the movie files
+Writer = animation.writers['ffmpeg']
+writer = Writer(fps=20, bitrate=-1, metadata=dict(title="Knight's Tour Animation 5x5", artist='Albert Reidak Pena'))
 
 # fist set up the figure, the axizm and plot the element 
 # we want to animate
 fig = plt.figure()
 ax = plt.axes(xlim=(0,8), ylim=(0,8))
 line, = ax.plot([], [], lw=2, marker='o')
+ax = plt.title("ctl7002 - Knight's Tour")
+ax = plt.gca()
 plt.grid()
 
 def init():
@@ -18,11 +26,7 @@ def init():
 
 # the game
 p = np.array([0,0])
-game=kt.Knights_tour(p,50000)
-print "starting tour at ", p
-if game.knight.spaces_used == 64:
-  print "Solution found when starting at ", p
-  print "spaces used: ", game.board.spaces_used
+game=kt.Knights_tour(p,50000, 8)
           
   
 # animatiob function. This is called sequantially
@@ -36,6 +40,7 @@ def animate(i):
 # call the animator
 # blit = True means only redraw parts that have changed
 anim = animation.FuncAnimation(fig, animate, init_func=init,
-                                               frames=200, interval=50, blit=True)
+                                               frames=8000, interval=50, repeat=True, blit=True)
 
 plt.show()                                          
+#anim.save("Knights Tour animation.mp4", writer=writer)

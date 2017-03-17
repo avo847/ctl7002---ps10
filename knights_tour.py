@@ -66,13 +66,12 @@ class Knight:
     self.spaces_used = 0 #board.spaces_used
     self.current = start_pos
     self.add_move(self.current)
-
+    np.random.seed(11)
     
   def get_moves(self, point):
     """determine available moves from given space """
     poss_moves = []
-    #y_cur = point[0]
-    #x_cur = point[1]
+ 
     for x in [-1, 1]:
       for y in [-2, 2]:
         a = point + np.array([x,y])
@@ -84,7 +83,7 @@ class Knight:
         a = point + np.array([x,y])
         if self.board.is_valid(a) and self.board.is_free(a): # add space to move list
           poss_moves.append(a)
-    
+    #np.random.shuffle(poss_moves)
     return poss_moves
     
  
@@ -115,17 +114,13 @@ class Knight:
     if move list is empty, backtrack"""
     
     while len(self.moves[self.current.tostring()]) == 0:
-      #print "empty move list at position ", self.current
-      #print "backtracking..."
       self.backtrack()
-      #print "...moved to ", self.current
     
     target = self.moves[self.current.tostring()][0] # a numpy array
     self.board.use_space(target) # use space in board - ?can we be sure this is complete before function returns?
     self.current = target # updated position
     self.spaces_used = self.spaces_used + 1
     move_list = self.get_moves(self.current)
-    #print "At ", self.current, "possible moves are", move_list
     self.moves[self.current.tostring()] = move_list #what if current space was encountered earlier?
     
   def backtrack(self):
@@ -134,32 +129,29 @@ class Knight:
     delete last element in self.moves, a point with empty move list
     
     Need to delete used space from board too!
-    """
-    #pdb.set_trace()
-  
+    """  
     
     point = np.fromstring(self.moves.popitem()[0], dtype=int)# pop last item in list, i.e., location where there are no moves
-    #print "...backtracking from ", point
     self.current = np.fromstring(self.moves.keys()[len(self.moves.keys())-1], dtype=int)    # set current to last item
-    #print "... to ", self.current
     self.board.free_space(point)
     key = self.current.tostring()
     self.moves[key] = self.moves[key] [1:] #remove first move, already tried
-    #print " at ", self.current, ", moves are ", self.moves[key]
     self.spaces_used = self.spaces_used - 1
     
 
     
 class Knights_tour:
-  def __init__(self, start_pos, max):
-    self.board = Board()
+  def __init__(self, start_pos, max, board_size=8):
+    self.board = Board(board_size)
     self.knight = Knight(self.board, start_pos)
     self.max_moves = max
+    self.total_spaces = self.board.size**2
     
   def run(self):
     i = 1 # first move is placing knight on the board
     while i < self.max_moves:
-      if self.knight.spaces_used == 64:
+      print "spaces used: ", self.knight.spaces_used
+      if self.knight.spaces_used == self.total_spaces:
         print "Completed tour!"
         break;
         

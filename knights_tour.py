@@ -68,7 +68,7 @@ class Knight:
     self.add_move(self.current)
     np.random.seed(11)
     
-  def get_moves(self, point):
+  def get_moves(self, point, warnsdorf=True):
     """determine available moves from given space """
     poss_moves = []
  
@@ -84,9 +84,33 @@ class Knight:
         if self.board.is_valid(a) and self.board.is_free(a): # add space to move list
           poss_moves.append(a)
     #np.random.shuffle(poss_moves)
+    
+    """If warnsdorf=True, use Warnsdorf's heuristic, picking the point that has 
+    fewest available moves. """
+    if warnsdorf:
+      poss_moves = sorted(poss_moves, key=self.how_many)
+      
+      
     return poss_moves
     
- 
+  def how_many(self, point):
+    """determine how many moves can be made from a given point."""
+    n_moves=0
+    for x in [-1, 1]:
+      for y in [-2, 2]:
+        a = point + np.array([x,y])
+        if self.board.is_valid(a) and self.board.is_free(a): # add space to move list
+          n_moves+=1
+
+    for x in [-2,2]:
+      for y in [-1,1]: 
+        a = point + np.array([x,y])
+        if self.board.is_valid(a) and self.board.is_free(a): # add space to move list
+          n_moves+=1
+    #np.random.shuffle(poss_moves)
+    return n_moves
+    
+    
   
   def add_move(self, point):
     """Manually add a move

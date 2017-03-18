@@ -10,10 +10,12 @@ print "ok"
 print "move list: "
 my_knight.print_move_list()
 
+
 print "first move:"
 my_knight.next_move()
 print "ok"
 my_knight.print_move_list()
+
 
 print "spaces used: "
 print my_knight.board.spaces_used
@@ -23,6 +25,7 @@ print "next move:"
 my_knight.next_move()
 print "ok"
 my_knight.print_move_list()
+print "there are ", my_knight.how_many(my_knight.current), " moves"
 
 print "spaces used: "
 print my_knight.board.spaces_used

@@ -1,6 +1,5 @@
 import collections as coll
 import numpy as np
-import pdb
     
 class Board:
   """ Class to store data for a square chessboard of specified size (default 8x8)
